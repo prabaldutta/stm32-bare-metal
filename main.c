@@ -8,23 +8,27 @@
 #define GPIOA_ODR       (*(volatile uint32_t *)(GPIOA_BASE + 0x14))
 
 #define RCC_IOPENR_GPIOAEN (1U << 0)
-#define GPIO_MODER_OUTPUT  (1U << 0)
-
-static void delay(volatile uint32_t t)
-{
-    while (t--) __asm__("nop");
-}
 
 int main(void)
 {
+    // Enable GPIOA clock
     RCC_IOPENR |= RCC_IOPENR_GPIOAEN;
 
-    GPIOA_MODER &= ~(3U << 0);
-    GPIOA_MODER |= GPIO_MODER_OUTPUT;
+    // Configure PA8 and PA12 as outputs
+    GPIOA_MODER &= ~((3U << (8 * 2)) | (3U << (12 * 2)));  // clear mode bits
+    GPIOA_MODER |=  ((1U << (8 * 2)) | (1U << (12 * 2)));  // set output mode
+
+    // Delay counts (adjust to match real timing):
+    const uint32_t delay = 500000;
+    
+    uint32_t count = 0;
 
     while (1)
     {
-        GPIOA_ODR ^= (1U << 0);
-        delay(200000);
+        if (count++ >= delay) {
+	    GPIOA_ODR ^= (1U << 8);
+	    GPIOA_ODR ^= (1U << 12);
+            count = 0;
+        }
     }
 }

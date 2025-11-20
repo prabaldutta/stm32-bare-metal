@@ -23,6 +23,11 @@ $(TARGET).elf: main.o startup.o linker.ld
 $(TARGET).bin: $(TARGET).elf
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
 
+jlink: $(TARGET).bin
+	JLinkExe -device STM32C011J4 -if SWD -speed 4000 -autoconnect 1
+
+jlinkscr: $(TARGET).bin
+	JLinkExe -commandfile script.jlink
 
 clean:
 	rm -f *.o *.elf *.bin
