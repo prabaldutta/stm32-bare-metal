@@ -5,3 +5,4 @@ autoconnect 1
 erase
 loadfile firmware.bin, 0x08000000
 r
+exit
